@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Helia Soren – daydreamer</title>
+  <meta name="description" content="The writing study of Helia Soren, daydreamer. Wander the shelves: stories, puzzles, inventions and more.">
+  <meta name="theme-color" content="#140b06">
+  <meta property="og:title" content="Helia Soren – daydreamer">
+  <meta property="og:image" content="hero.jpeg">
+  <link rel="preload" as="image" href="hero.jpeg" fetchpriority="high">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="home">
+
+  <header class="visually-hidden">
+    <h1>Helia Soren – daydreamer</h1>
+  </header>
+
+  <main>
+    <!-- Hero: the study. Every hotspot sits on top of the image using percentages,
+         so the links stay aligned at any screen size. -->
+    <div class="room">
+      <img
+        class="room__img"
+        src="hero.jpeg"
+        width="848" height="1241"
+        fetchpriority="high"
+        alt="A cosy wooden study lined with bookshelves. A robot gazes out of a window at a coastal sunset, a desk chair faces a monitor reading Main Menu, and a leather book, quill, inks and a magnifying glass rest on the foreground desk.">
+
+      <a class="hot hot-inventions" href="inventions.html"><span>Inventions</span></a>
+      <a class="hot hot-more"       href="more.html"><span>More</span></a>
+      <a class="hot hot-connect"    href="connect.html"><span>Connect</span></a>
+      <a class="hot hot-words"      href="words.html"><span>Words Words Words</span></a>
+      <a class="hot hot-burning"    href="for-burning.html"><span>For Burning</span></a>
+      <a class="hot hot-book"       href="stories.html" tabindex="-1" aria-hidden="true"><span>Stories</span></a>
+      <a class="hot hot-stories"    href="stories.html"><span>Stories</span></a>
+      <a class="hot hot-puzzle"     href="puzzle.html"><span>Puzzle</span></a>
+      <a class="hot hot-misc"       href="misc.html"><span>Misc</span></a>
+    </div>
+
+    <!-- Plain-text version of the same links: works on touch screens,
+         with screen readers, and if the image is slow to load. -->
+    <nav class="shelf" aria-label="Rooms of the study">
+      <p class="shelf__title">Pick something off the shelf</p>
+      <ul>
+        <li><a href="stories.html">Stories</a></li>
+        <li><a href="puzzle.html">Puzzle</a></li>
+        <li><a href="inventions.html">Inventions</a></li>
+        <li><a href="words.html">Words Words Words</a></li>
+        <li><a href="for-burning.html">For Burning</a></li>
+        <li><a href="misc.html">Misc</a></li>
+        <li><a href="more.html">More</a></li>
+        <li><a href="connect.html">Connect</a></li>
+      </ul>
+    </nav>
+  </main>
+
+</body>
+</html>
