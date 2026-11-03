@@ -1,203 +1,141 @@
 /* ==========================================================
    Helia Soren – daydreamer
-   Palette pulled from the hero illustration.
+   HOME PAGE: full-screen hero with hidden overlay links
    ========================================================== */
 
 :root {
-  --ink:       #140b06;  /* shadows between the shelves */
-  --walnut:    #3b2010;  /* desk and shelf wood */
-  --burl:      #6b3a1a;  /* lighter wood grain */
-  --lamp:      #f4b942;  /* recessed ceiling lights */
-  --parchment: #ecd8ab;  /* handwritten labels, paper */
-  --monitor:   #8fe0a8;  /* "Main Menu" screen glow */
-  --dusk:      #e58c6b;  /* window sunset */
+  --ink:       #140b06;
+  --walnut:    #3b2010;
+  --burl:      #6b3a1a;
+  --lamp:      #f4b942;
+  --parchment: #ecd8ab;
+  --monitor:   #8fe0a8;
 
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
   --hand:  "Segoe Print", "Bradley Hand", "Noteworthy", "Comic Sans MS", cursive;
+
+  /* Viewport height that behaves on mobile browsers */
+  --vh: 100vh;
+}
+
+@supports (height: 100dvh) {
+  :root { --vh: 100dvh; }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { background: var(--ink); }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  background:
-    radial-gradient(ellipse at 50% 0%, #2b170a 0%, var(--ink) 65%) fixed;
-  color: var(--parchment);
-  font-family: var(--serif);
-  font-size: 1.0625rem;
-  line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
-
 a { color: inherit; }
 
 :focus-visible {
-  outline: 3px solid var(--lamp);
-  outline-offset: 3px;
+  outline: 2px solid var(--lamp);
+  outline-offset: 2px;
   border-radius: 4px;
 }
 
-.visually-hidden {
-  position: absolute !important;
-  width: 1px; height: 1px;
-  margin: -1px; padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* ==========================================================
-   HOME: the study
-   ========================================================== */
-
-.room {
-  position: relative;
-  width: min(100%, 880px);
-  margin: 0 auto;
-  line-height: 0;
-  box-shadow: 0 0 80px rgba(244, 185, 66, 0.12);
-}
-
-.room__img {
-  display: block;
+/* ---- Page frame: no margins, no scrollbars ---- */
+html:has(body.home),
+body.home {
+  margin: 0;
+  padding: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
 }
 
-/* ---- Hotspots -------------------------------------------
-   Positions are percentages of the 848 × 1241 image, so they
-   scale with it. Tweak --x / --y / --w / --h to nudge one.   */
+/* ---- The stage ----
+   This behaves exactly like `background-size: cover; background-position: center`
+   on the viewport, but it is a real box with the image's own proportions.
+   That means the links, which are positioned in % of the stage,
+   stay glued to the artwork no matter how the screen crops it. */
+.stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
+  aspect-ratio: 848 / 1241;
+  width: max(100vw, calc(var(--vh) * 848 / 1241));  /* never narrower than the screen */
+  /* height follows from aspect-ratio, so it is never shorter than the screen either */
+
+  margin: 0;
+  padding: 0;
+  background-image: url("hero.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* 1em = 1% of the stage width, so link text scales with the art */
+  font-size: calc(max(100vw, var(--vh) * 848 / 1241) / 100);
+}
+
+/* ---- Overlay links ----
+   The words already exist in the painting, so the live text is
+   transparent. It is still real text: selectable, readable by screen
+   readers, and tabbable. Hover adds a soft lamp-light glow. */
 .hot {
   position: absolute;
   left: var(--x);
   top: var(--y);
   width: var(--w);
   height: var(--h);
-  display: block;
-  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: transparent;
+  font-family: var(--hand);
+  font-size: 1.6em;
+  line-height: 1;
+  text-align: center;
   text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+
+  border-radius: 0.5em;
   cursor: pointer;
-  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .hot:hover,
 .hot:focus-visible {
-  background: rgba(244, 185, 66, 0.14);
-  box-shadow:
-    0 0 0 2px rgba(244, 185, 66, 0.85),
-    0 0 22px 6px rgba(244, 185, 66, 0.45);
+  background-color: rgba(244, 185, 66, 0.12);
+  box-shadow: 0 0 1.4em 0.35em rgba(244, 185, 66, 0.38);
   outline: none;
-  z-index: 5;
 }
 
-/* The label doubles as a tooltip and as the accessible name */
-.hot span {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + 8px);
-  transform: translateX(-50%) translateY(4px);
-  padding: 0.3em 0.75em;
-  background: var(--ink);
-  color: var(--parchment);
-  border: 1px solid var(--lamp);
-  border-radius: 3px;
-  font: 1rem/1.3 var(--hand);
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
-.hot:hover span,
-.hot:focus-visible span {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* ---- Individual hotspot positions ---- */
+/* ---- Positions (percent of the 848 × 1241 artwork) ----
+   Nudge a link by editing its --x / --y / --w / --h. */
 .hot-inventions { --x: 15%;   --y: 61%;   --w: 8.5%;  --h: 2.8%; }
-.hot-more       { --x: 78.6%; --y: 48.8%; --w: 4.8%;  --h: 2.6%; }
+.hot-more       { --x: 78.6%; --y: 48.8%; --w: 4.8%;  --h: 2.6%; font-size: 1.1em; }
 .hot-connect    { --x: 61%;   --y: 61.2%; --w: 8%;    --h: 2.4%; }
-.hot-words      { --x: 79.8%; --y: 80.2%; --w: 12.4%; --h: 7.8%; }
+.hot-words      { --x: 79.8%; --y: 80.2%; --w: 12.4%; --h: 7.8%; font-size: 1.3em; white-space: normal; }
 .hot-burning    { --x: 43.2%; --y: 84.1%; --w: 13.4%; --h: 2.2%; }
-.hot-book       { --x: 13.2%; --y: 82.6%; --w: 27%;   --h: 14%;  }
+.hot-book       { --x: 13.2%; --y: 82.6%; --w: 27%;   --h: 14%; }
 .hot-stories    { --x: 25.5%; --y: 96.6%; --w: 12.5%; --h: 2.9%; }
 .hot-puzzle     { --x: 3.2%;  --y: 95.4%; --w: 8.8%;  --h: 2.4%; }
 .hot-misc       { --x: 57.2%; --y: 94.9%; --w: 6.8%;  --h: 2.4%; }
 
-/* One-time hint on load: the hotspots glow once, then rest. */
-@media (prefers-reduced-motion: no-preference) {
-  .hot {
-    animation: lamp-hint 2.4s ease-out 1.2s 1 both;
-  }
-  @keyframes lamp-hint {
-    0%   { box-shadow: 0 0 0 0 rgba(244, 185, 66, 0); }
-    35%  { box-shadow: 0 0 0 2px rgba(244, 185, 66, 0.7), 0 0 18px 4px rgba(244, 185, 66, 0.4); }
-    100% { box-shadow: 0 0 0 0 rgba(244, 185, 66, 0); }
-  }
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hot { transition: none; }
 }
 
-/* ---- Text navigation under the image ---- */
-
-.shelf {
-  width: min(100%, 880px);
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 3.5rem;
-  text-align: center;
-  background: linear-gradient(to bottom, var(--walnut), var(--ink));
-  border-top: 4px solid var(--burl);
-}
-
-.shelf__title {
-  margin: 0 0 1.25rem;
-  font-family: var(--hand);
-  font-size: 1.25rem;
-  color: var(--lamp);
-}
-
-.shelf ul {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem 1.75rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.shelf a {
-  display: inline-block;
-  padding: 0.35rem 0.1rem;
-  font-family: var(--hand);
-  font-size: 1.15rem;
-  text-decoration: none;
-  border-bottom: 1px dashed rgba(236, 216, 171, 0.45);
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.shelf a:hover {
-  color: var(--lamp);
-  border-bottom-color: var(--lamp);
-}
-
-/* Touch screens have no hover, so keep the tap targets generous */
-@media (hover: none) {
-  .hot span { display: none; }
-}
-
-/* ==========================================================
-   INNER PAGES (connect.html and copies of it)
+/* ====================================================
+      INNER PAGES (connect.html and copies of it)
    ========================================================== */
 
-.page {
-  background:
-    radial-gradient(ellipse at 50% -10%, #3a1f0e 0%, var(--ink) 60%) fixed;
+body.page {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--parchment);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  background: radial-gradient(ellipse at 50% -10%, #3a1f0e 0%, var(--ink) 60%) fixed, var(--ink);
 }
 
 .page__bar {
