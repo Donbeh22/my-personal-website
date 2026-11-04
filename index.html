@@ -9,8 +9,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Gentle pulse on the sound button while the music is waiting to start.
+       To remove the pulse entirely, delete this whole <style> block. */
+    body.needs-sound .sound-toggle {
+      animation: soundPulse 2.2s ease-in-out infinite;
+      opacity: 1;
+    }
+    @keyframes soundPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255, 207, 107, 0); }
+      50%      { box-shadow: 0 0 14px 4px rgba(255, 207, 107, 0.5); }
+    }
+  </style>
 </head>
-<body class="home">
+<body class="home needs-sound">
 
   <main class="stage" aria-label="Explorable room illustration">
 
@@ -24,7 +37,7 @@
     <a class="hotspot" href="stories.html"    style="--px: 27%;   --py: 94%;   --lx: 38.5%; --ly: 90%;">Stories</a>
     <a class="hotspot" href="misc.html"       style="--px: 60%;   --py: 95%;   --lx: 54%;   --ly: 92%;">Misc</a>
 
-    <!-- New easter eggs -->
+    <!-- More easter eggs -->
     <a class="hotspot wrap" href="words.html"      style="--px: 85.5%; --py: 84%;   --lx: 67%;   --ly: 85.5%;">Words Words Words Everywhere</a>
     <a class="hotspot"      href="moce.html"       style="--px: 81%;   --py: 50%;   --lx: 64.7%; --ly: 48.2%;">Moce Seone</a>
     <a class="hotspot"      href="cloud.html"      style="--px: 57.3%; --py: 12.5%; --lx: 53.3%; --ly: 14.3%;">Possible Cloud</a>
@@ -58,59 +71,52 @@
     (function () {
       var audio = document.getElementById('bgm');
       var btn = document.getElementById('sound-toggle');
-      var VOLUME = 0.15;            /* 0 = silent, 1 = full. Change this to taste. */
-      var events = ['pointerdown', 'pointerup', 'click', 'touchend', 'keydown'];
+      var VOLUME = 0.25;            /* 0 = silent, 1 = full. Change this to taste. */
+      var KEY = 'bgm-muted-v2';
       var muted = false;
 
+      /* Only gestures that browsers accept as "permission to play sound" */
+      var events = ['pointerdown', 'mousedown', 'click', 'touchend', 'keydown'];
+
       audio.volume = VOLUME;
-      try { muted = localStorage.getItem('bgm-muted') === '1'; } catch (e) {}
+      try { muted = localStorage.getItem(KEY) === '1'; } catch (e) {}
 
       function render() {
-        var on = !muted && !audio.paused;
-        btn.textContent = on ? '🔊' : '🔇';
-        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        var playing = !audio.paused;
+        btn.textContent = playing ? '🔊' : '🔇';
+        btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+        /* Pulse the button only while waiting for sound to start */
+        document.body.classList.toggle('needs-sound', !playing && !muted);
       }
 
       function cleanup() {
-        events.forEach(function (e) { document.removeEventListener(e, start); });
+        events.forEach(function (e) { document.removeEventListener(e, start, true); });
       }
 
-      /* Browsers block sound until the visitor interacts, so we try right away
-         and, if blocked, start on the first tap, click, or key press. */
+      /* Try immediately; if the browser blocks it, start on the first click,
+         tap, or key press anywhere on the page. */
       function start() {
-        if (muted) return;
+        if (muted || !audio.paused) return;
         var p = audio.play();
         if (p && p.then) {
           p.then(function () { cleanup(); render(); }).catch(function () {});
         }
       }
 
-      events.forEach(function (e) { document.addEventListener(e, start); });
+      events.forEach(function (e) { document.addEventListener(e, start, true); });
 
-      /* Keep presses on the sound button from triggering the auto-start */
-      events.forEach(function (e) {
-        btn.addEventListener(e, function (ev) { ev.stopPropagation(); });
-      });
-
-      btn.addEventListener('click', function () {
-        if (muted || audio.paused) {
+      /* Sound button: toggles on/off (and remembers the choice) */
+      btn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (audio.paused) {
           muted = false;
-          audio.play().catch(function () {});
+          audio.play().then(render).catch(function () {});
         } else {
           muted = true;
           audio.pause();
         }
-        try { localStorage.setItem('bgm-muted', muted ? '1' : '0'); } catch (e) {}
+        try { localStorage.setItem(KEY, muted ? '1' : '0'); } catch (e) {}
         render();
       });
 
       audio.addEventListener('play', render);
-      audio.addEventListener('pause', render);
-
-      render();
-      start();
-    })();
-  </script>
-
-</body>
-</html>
