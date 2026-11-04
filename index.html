@@ -1,27 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Helia Soren – daydreamer</title>
-  <meta name="description" content="The writing study of Helia Soren, daydreamer.">
-  <meta name="theme-color" content="#140b06">
-  <meta property="og:title" content="Helia Soren – daydreamer">
-  <meta property="og:image" content="hero.jpg">
-  <link rel="preload" as="image" href="hero.jpg" fetchpriority="high">
+  <title>Helia Soren – Daydreamer</title>
+  <meta name="description" content="A personal website. Explore the room to find what's hidden.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="home">
-  <main class="stage">
-    <a class="hot hot-inventions" href="inventions.html">Inventions</a>
-    <a class="hot hot-more"       href="more.html">More</a>
-    <a class="hot hot-connect"    href="connect.html">Connect</a>
-    <a class="hot hot-words"      href="words.html">Words Words Words</a>
-    <a class="hot hot-burning"    href="for-burning.html">For Burning</a>
-    <a class="hot hot-book"       href="stories.html" tabindex="-1" aria-hidden="true">Stories</a>
-    <a class="hot hot-stories"    href="stories.html">Stories</a>
-    <a class="hot hot-puzzle"     href="puzzle.html">Puzzle</a>
-    <a class="hot hot-misc"       href="misc.html">Misc</a>
+
+  <!-- The stage scales like "background-size: cover" so links stay pinned to the art -->
+  <main class="stage" aria-label="Explorable room illustration">
+
+    <!-- Each link's position is set with --x / --y (percent of the image) -->
+    <a class="hotspot" href="about.html"    style="--x: 29.5%; --y: 54.5%;">About</a>
+    <a class="hotspot" href="projects.html" style="--x: 19%;   --y: 60%;">Projects</a>
+    <a class="hotspot" href="connect.html"  style="--x: 64.5%; --y: 62.5%;">Connect</a>
+    <a class="hotspot" href="burning.html"  style="--x: 49.5%; --y: 85.5%;">For Burning</a>
+    <a class="hotspot" href="puzzle.html"   style="--x: 7.5%;  --y: 96%;">Puzzle</a>
+    <a class="hotspot" href="stories.html"  style="--x: 31%;   --y: 97%;">Stories</a>
+    <a class="hotspot" href="misc.html"     style="--x: 60.5%; --y: 95.5%;">Misc</a>
+
   </main>
+
+  <!-- Accessible fallback nav for keyboard / screen reader / cropped viewports -->
+  <nav class="fallback-nav" aria-label="Site navigation">
+    <a href="about.html">About</a>
+    <a href="projects.html">Projects</a>
+    <a href="connect.html">Connect</a>
+    <a href="burning.html">For Burning</a>
+    <a href="puzzle.html">Puzzle</a>
+    <a href="stories.html">Stories</a>
+    <a href="misc.html">Misc</a>
+  </nav>
+
 </body>
 </html>
