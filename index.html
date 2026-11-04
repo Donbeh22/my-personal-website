@@ -16,16 +16,30 @@
 
     <!-- px/py = position on the portrait image (phones)
          lx/ly = position on the landscape image (desktops) -->
-    <a class="hotspot" href="about.html"    style="--px: 30%;   --py: 54%;   --lx: 41%;   --ly: 53%;">About</a>
-    <a class="hotspot" href="projects.html" style="--px: 19%;   --py: 42%;   --lx: 35.5%; --ly: 47%;">Projects</a>
-    <a class="hotspot" href="connect.html"  style="--px: 64.5%; --py: 62.5%; --lx: 57%;   --ly: 59%;">Connect</a>
-    <a class="hotspot" href="burning.html"  style="--px: 49.5%; --py: 85%;   --lx: 50%;   --ly: 86.5%;">For Burning</a>
-    <a class="hotspot" href="puzzle.html"   style="--px: 7%;    --py: 93%;   --lx: 29%;   --ly: 92%;">Puzzle</a>
-    <a class="hotspot" href="stories.html"  style="--px: 27%;   --py: 94%;   --lx: 38.5%; --ly: 90%;">Stories</a>
-    <a class="hotspot" href="misc.html"     style="--px: 60%;   --py: 95%;   --lx: 54%;   --ly: 92%;">Misc</a>
+    <a class="hotspot" href="about.html"      style="--px: 30%;   --py: 54%;   --lx: 41%;   --ly: 53%;">About</a>
+    <a class="hotspot" href="projects.html"   style="--px: 19%;   --py: 42%;   --lx: 35.5%; --ly: 47%;">Projects</a>
+    <a class="hotspot" href="connect.html"    style="--px: 64.5%; --py: 62.5%; --lx: 57%;   --ly: 59%;">Connect</a>
+    <a class="hotspot" href="burning.html"    style="--px: 49.5%; --py: 85%;   --lx: 50%;   --ly: 86.5%;">For Burning</a>
+    <a class="hotspot" href="puzzle.html"     style="--px: 7%;    --py: 93%;   --lx: 29%;   --ly: 92%;">Puzzle</a>
+    <a class="hotspot" href="stories.html"    style="--px: 27%;   --py: 94%;   --lx: 38.5%; --ly: 90%;">Stories</a>
+    <a class="hotspot" href="misc.html"       style="--px: 60%;   --py: 95%;   --lx: 54%;   --ly: 92%;">Misc</a>
+
+    <!-- New easter eggs -->
+    <a class="hotspot wrap" href="words.html"      style="--px: 85.5%; --py: 84%;   --lx: 67%;   --ly: 85.5%;">Words Words Words Everywhere</a>
+    <a class="hotspot"      href="moce.html"       style="--px: 81%;   --py: 50%;   --lx: 64.7%; --ly: 48.2%;">Moce Seone</a>
+    <a class="hotspot"      href="cloud.html"      style="--px: 57.3%; --py: 12.5%; --lx: 53.3%; --ly: 14.3%;">Possible Cloud</a>
+    <a class="hotspot"      href="flying-car.html" style="--px: 45.4%; --py: 43%;   --lx: 48.3%; --ly: 39.5%;">Flying Car</a>
 
   </main>
 
+  <!-- Shown briefly on touch screens only -->
+  <p class="touch-hint" aria-hidden="true">Tap around the room to explore</p>
+
+  <!-- Sound on/off -->
+  <button id="sound-toggle" class="sound-toggle" type="button" aria-label="Toggle sound">🔇</button>
+  <audio id="bgm" src="ambient.mp3" loop preload="auto"></audio>
+
+  <!-- Keyboard / screen reader navigation (appears when you press Tab) -->
   <nav class="fallback-nav" aria-label="Site navigation">
     <a href="about.html">About</a>
     <a href="projects.html">Projects</a>
@@ -34,7 +48,69 @@
     <a href="puzzle.html">Puzzle</a>
     <a href="stories.html">Stories</a>
     <a href="misc.html">Misc</a>
+    <a href="words.html">Words</a>
+    <a href="moce.html">Moce Seone</a>
+    <a href="cloud.html">Cloud</a>
+    <a href="flying-car.html">Flying Car</a>
   </nav>
+
+  <script>
+    (function () {
+      var audio = document.getElementById('bgm');
+      var btn = document.getElementById('sound-toggle');
+      var VOLUME = 0.25;            /* 0 = silent, 1 = full. Change this to taste. */
+      var events = ['pointerdown', 'pointerup', 'click', 'touchend', 'keydown'];
+      var muted = false;
+
+      audio.volume = VOLUME;
+      try { muted = localStorage.getItem('bgm-muted') === '1'; } catch (e) {}
+
+      function render() {
+        var on = !muted && !audio.paused;
+        btn.textContent = on ? '🔊' : '🔇';
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+
+      function cleanup() {
+        events.forEach(function (e) { document.removeEventListener(e, start); });
+      }
+
+      /* Browsers block sound until the visitor interacts, so we try right away
+         and, if blocked, start on the first tap, click, or key press. */
+      function start() {
+        if (muted) return;
+        var p = audio.play();
+        if (p && p.then) {
+          p.then(function () { cleanup(); render(); }).catch(function () {});
+        }
+      }
+
+      events.forEach(function (e) { document.addEventListener(e, start); });
+
+      /* Keep presses on the sound button from triggering the auto-start */
+      events.forEach(function (e) {
+        btn.addEventListener(e, function (ev) { ev.stopPropagation(); });
+      });
+
+      btn.addEventListener('click', function () {
+        if (muted || audio.paused) {
+          muted = false;
+          audio.play().catch(function () {});
+        } else {
+          muted = true;
+          audio.pause();
+        }
+        try { localStorage.setItem('bgm-muted', muted ? '1' : '0'); } catch (e) {}
+        render();
+      });
+
+      audio.addEventListener('play', render);
+      audio.addEventListener('pause', render);
+
+      render();
+      start();
+    })();
+  </script>
 
 </body>
 </html>
