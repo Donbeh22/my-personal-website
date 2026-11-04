@@ -1,237 +1,273 @@
 /* ==========================================================
-   Helia Soren – daydreamer
-   HOME PAGE: full-screen hero with hidden overlay links
+   Variables
    ========================================================== */
-
 :root {
-  --ink:       #140b06;
-  --walnut:    #3b2010;
-  --burl:      #6b3a1a;
-  --lamp:      #f4b942;
-  --parchment: #ecd8ab;
-  --monitor:   #8fe0a8;
+  /* Image dimensions (width / height) – update if you swap the art */
+  --img-w: 848;
+  --img-h: 1241;
 
-  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-  --hand:  "Segoe Print", "Bradley Hand", "Noteworthy", "Comic Sans MS", cursive;
+  /* Which part of the image stays centered when cropped (0% = top, 100% = bottom) */
+  --focus-y: 62%;
 
-  /* Viewport height that behaves on mobile browsers */
-  --vh: 100vh;
+  --wood-dark: #1e1209;
+  --wood-mid: #4a2c17;
+  --paper: #f3e4c4;
+  --paper-dim: #d9c49a;
+  --glow: #ffcf6b;
+  --ink: #2b1a0e;
+
+  --font-hand: "Caveat", "Segoe Script", cursive;
+  --font-serif: "Lora", Georgia, "Times New Roman", serif;
 }
 
-@supports (height: 100dvh) {
-  :root { --vh: 100dvh; }
+/* ==========================================================
+   Reset
+   ========================================================== */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+body {
+  background: var(--wood-dark);
+  color: var(--paper);
+  font-family: var(--font-serif);
+  line-height: 1.7;
+}
 
 a { color: inherit; }
 
-:focus-visible {
-  outline: 2px solid var(--lamp);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ---- Page frame: no margins, no scrollbars ---- */
-html:has(body.home),
+/* ==========================================================
+   HOME: full-screen hero, no scrollbars
+   ========================================================== */
 body.home {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;          /* mobile browser chrome-safe */
   overflow: hidden;
-  background: var(--ink);
+  position: relative;
 }
 
-/* ---- The stage ----
-   This behaves exactly like `background-size: cover; background-position: center`
-   on the viewport, but it is a real box with the image's own proportions.
-   That means the links, which are positioned in % of the stage,
-   stay glued to the artwork no matter how the screen crops it. */
+/* "cover" behaviour, but as a real box so children can be positioned on the art */
 .stage {
   position: absolute;
-  top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  top: var(--focus-y);
+  transform: translate(-50%, calc(-1 * var(--focus-y)));
 
-  aspect-ratio: 848 / 1241;
-  width: max(100vw, calc(var(--vh) * 848 / 1241));  /* never narrower than the screen */
-  /* height follows from aspect-ratio, so it is never shorter than the screen either */
+  /* Whichever is larger: fit width or fit height → always covers the viewport */
+  width:  max(100vw, calc(100dvh * var(--img-w) / var(--img-h)));
+  height: max(100dvh, calc(100vw * var(--img-h) / var(--img-w)));
 
-  margin: 0;
-  padding: 0;
-  background-image: url("hero.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  /* 1em = 1% of the stage width, so link text scales with the art */
-  font-size: calc(max(100vw, var(--vh) * 848 / 1241) / 100);
+  background: url("hero.jpg") center / 100% 100% no-repeat;
 }
 
-/* ---- Overlay links ----
-   The words already exist in the painting, so the live text is
-   transparent. It is still real text: selectable, readable by screen
-   readers, and tabbable. Hover adds a soft lamp-light glow. */
-.hot {
+/* ----------------------------------------------------------
+   Hidden "easter egg" links
+   ---------------------------------------------------------- */
+.hotspot {
   position: absolute;
   left: var(--x);
   top: var(--y);
-  width: var(--w);
-  height: var(--h);
+  transform: translate(-50%, -50%);
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: transparent;
-  font-family: var(--hand);
-  font-size: 1.6em;
-  line-height: 1;
-  text-align: center;
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: clamp(1rem, 2.4vmin, 1.9rem);
+  letter-spacing: 0.04em;
   text-decoration: none;
   white-space: nowrap;
-  overflow: hidden;
 
-  border-radius: 0.5em;
+  /* Subtle by default: part of the scenery */
+  color: rgba(255, 244, 214, 0.0);
+  padding: 0.5em 0.9em;
+  border-radius: 999px;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  transition: color 0.35s ease, text-shadow 0.35s ease,
+              background 0.35s ease, transform 0.35s ease;
 }
 
-.hot:hover,
-.hot:focus-visible {
-  background-color: rgba(244, 185, 66, 0.12);
-  box-shadow: 0 0 1.4em 0.35em rgba(244, 185, 66, 0.38);
+/* Soft hint that something is clickable, without spoiling the art */
+.hotspot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 rgba(255, 207, 107, 0);
+  animation: pulse 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.hotspot:hover,
+.hotspot:focus-visible {
+  color: var(--paper);
+  background: rgba(30, 18, 9, 0.55);
+  text-shadow: 0 0 10px var(--glow), 0 0 22px rgba(255, 207, 107, 0.6);
+  transform: translate(-50%, -50%) scale(1.12);
   outline: none;
 }
 
-/* ---- Positions (percent of the 848 × 1241 artwork) ----
-   Nudge a link by editing its --x / --y / --w / --h. */
-.hot-inventions { --x: 15%;   --y: 61%;   --w: 8.5%;  --h: 2.8%; }
-.hot-more       { --x: 78.6%; --y: 48.8%; --w: 4.8%;  --h: 2.6%; font-size: 1.1em; }
-.hot-connect    { --x: 61%;   --y: 61.2%; --w: 8%;    --h: 2.4%; }
-.hot-words      { --x: 79.8%; --y: 80.2%; --w: 12.4%; --h: 7.8%; font-size: 1.3em; white-space: normal; }
-.hot-burning    { --x: 43.2%; --y: 84.1%; --w: 13.4%; --h: 2.2%; }
-.hot-book       { --x: 13.2%; --y: 82.6%; --w: 27%;   --h: 14%; }
-.hot-stories    { --x: 25.5%; --y: 96.6%; --w: 12.5%; --h: 2.9%; }
-.hot-puzzle     { --x: 3.2%;  --y: 95.4%; --w: 8.8%;  --h: 2.4%; }
-.hot-misc       { --x: 57.2%; --y: 94.9%; --w: 6.8%;  --h: 2.4%; }
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .hot { transition: none; }
+.hotspot:focus-visible {
+  outline: 2px dashed var(--glow);
+  outline-offset: 3px;
 }
 
-/* ====================================================
-      INNER PAGES (connect.html and copies of it)
-   ========================================================== */
-
-body.page {
-  margin: 0;
-  min-height: 100vh;
-  color: var(--parchment);
-  font-family: var(--serif);
-  font-size: 1.0625rem;
-  line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
-  background: radial-gradient(ellipse at 50% -10%, #3a1f0e 0%, var(--ink) 60%) fixed, var(--ink);
+@keyframes pulse {
+  0%, 85%, 100% { box-shadow: 0 0 0 0 rgba(255, 207, 107, 0); }
+  92%           { box-shadow: 0 0 18px 4px rgba(255, 207, 107, 0.35); }
 }
 
-.page__bar {
+/* Touch devices have no hover, so make the labels faintly visible */
+@media (hover: none) {
+  .hotspot {
+    color: rgba(255, 244, 214, 0.85);
+    background: rgba(30, 18, 9, 0.45);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* Fallback nav: visually hidden until focused via keyboard */
+.fallback-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 0.75rem;
+  transform: translate(-50%, 200%);
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.5rem 1.5rem;
-  max-width: 44rem;
-  margin: 0 auto;
-  padding: 1.5rem 1.5rem 0;
-  font-family: var(--hand);
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  padding: 0.6rem 1rem;
+  background: rgba(30, 18, 9, 0.92);
+  border: 1px solid var(--wood-mid);
+  border-radius: 10px;
+  font-family: var(--font-hand);
+  font-size: 1.2rem;
+  transition: transform 0.25s ease;
+  z-index: 10;
+}
+.fallback-nav:focus-within { transform: translate(-50%, 0); }
+.fallback-nav a { text-decoration: none; padding: 0.1rem 0.4rem; }
+.fallback-nav a:hover,
+.fallback-nav a:focus-visible { color: var(--glow); }
+
+/* ==========================================================
+   SUB-PAGES (template.html and friends)
+   ========================================================== */
+body.subpage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(1.5rem, 5vw, 4rem) 1.25rem 3rem;
+
+  /* Warm wood-and-lamplight backdrop that echoes the hero */
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 207, 107, 0.18), transparent 60%),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0 2px, transparent 2px 90px),
+    linear-gradient(180deg, #3a2111 0%, var(--wood-dark) 100%);
+  background-attachment: fixed;
 }
 
-.page__back {
-  color: var(--lamp);
-  text-decoration: none;
-  border-bottom: 1px dashed currentColor;
+.page-header {
+  width: 100%;
+  max-width: 46rem;
+  text-align: center;
+  margin-bottom: 1.75rem;
 }
 
-.page__back:hover { color: var(--parchment); }
-
-.page__site {
+.page-header .kicker {
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  color: var(--glow);
   margin: 0;
-  font-size: 0.95rem;
-  opacity: 0.7;
+  letter-spacing: 0.06em;
 }
 
-.page__main {
-  max-width: 44rem;
-  margin: 0 auto;
-  padding: 3rem 1.5rem 2rem;
+.page-title {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 8vw, 4.5rem);
+  line-height: 1.05;
+  margin: 0.1em 0 0;
+  color: var(--paper);
+  text-shadow: 0 0 18px rgba(255, 207, 107, 0.35);
 }
 
-.page__title {
-  margin: 0 0 0.5rem;
-  font-family: var(--hand);
-  font-weight: 400;
-  font-size: clamp(2.5rem, 8vw, 4rem);
-  line-height: 1.1;
-  color: var(--lamp);
-  text-shadow: 0 0 24px rgba(244, 185, 66, 0.35);
+.page-header::after {
+  content: "";
+  display: block;
+  width: 7rem;
+  height: 2px;
+  margin: 1.1rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--glow), transparent);
 }
 
-.page__lede {
-  margin: 0 0 2.5rem;
-  max-width: 34rem;
-  font-size: 1.25rem;
+/* The "parchment" content box */
+.content-box {
+  width: 100%;
+  max-width: 46rem;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  color: var(--ink);
+  background:
+    linear-gradient(rgba(243, 228, 196, 0.97), rgba(232, 212, 170, 0.97));
+  border: 1px solid #b8975c;
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 6px rgba(74, 44, 23, 0.9),
+    0 18px 40px rgba(0, 0, 0, 0.55),
+    inset 0 0 60px rgba(139, 94, 40, 0.25);
+  font-size: 1.08rem;
+}
+
+.content-box h2 {
+  font-family: var(--font-hand);
+  font-size: 2rem;
+  margin: 1.5rem 0 0.25rem;
+  color: #5a3414;
+}
+.content-box h2:first-child { margin-top: 0; }
+.content-box p { margin: 0 0 1em; }
+.content-box a { color: #7a3d10; text-underline-offset: 3px; }
+.content-box a:hover { color: #b0561a; }
+.content-box img { max-width: 100%; height: auto; border-radius: 4px; }
+
+.content-box blockquote {
+  margin: 1.25rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid #b8975c;
   font-style: italic;
 }
 
-.card {
-  margin: 0 0 1.5rem;
-  padding: 1.5rem 1.75rem;
-  background: linear-gradient(160deg, rgba(107, 58, 26, 0.55), rgba(59, 32, 16, 0.75));
-  border: 1px solid rgba(244, 185, 66, 0.3);
-  border-left: 5px solid var(--burl);
-  border-radius: 4px;
+/* Back link */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 0.55rem 1.2rem;
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  text-decoration: none;
+  color: var(--paper);
+  background: rgba(30, 18, 9, 0.6);
+  border: 1px solid var(--wood-mid);
+  border-radius: 999px;
+  transition: color 0.25s, border-color 0.25s, transform 0.25s,
+              box-shadow 0.25s;
+}
+.back-link:hover,
+.back-link:focus-visible {
+  color: var(--glow);
+  border-color: var(--glow);
+  box-shadow: 0 0 14px rgba(255, 207, 107, 0.35);
+  transform: translateX(-3px);
+  outline: none;
 }
 
-.card h2 {
-  margin: 0 0 0.75rem;
-  font-family: var(--hand);
-  font-weight: 400;
-  font-size: 1.35rem;
-  color: var(--parchment);
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }
-
-.card p { margin: 0; max-width: 34rem; }
-
-.links {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.links li + li { margin-top: 0.4rem; }
-
-.links a {
-  color: var(--monitor);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 4px;
-}
-
-.links a:hover { color: var(--lamp); }
-
-.page__foot {
-  max-width: 44rem;
-  margin: 0 auto;
-  padding: 1rem 1.5rem 3rem;
-  font-family: var(--hand);
-}
-
-.page__foot a {
-  color: var(--parchment);
-  opacity: 0.8;
-}
-
-.page__foot a:hover { color: var(--lamp); opacity: 1; }
