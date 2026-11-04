@@ -56,12 +56,12 @@ body.home {
 .stage {
   position: absolute;
   left: 50%;
-  top: var(--focus-y);
-  transform: translate(-50%, calc(-1 * var(--focus-y)));
+  top: 50%;
+  transform: translate(-50%, -50%);
 
-  /* Whichever is larger: fit width or fit height → always covers the viewport */
-  width:  max(100vw, calc(100dvh * var(--img-w) / var(--img-h)));
-  height: max(100dvh, calc(100vw * var(--img-h) / var(--img-w)));
+  /* "contain": the whole image always fits */
+  width:  min(100vw, calc(100dvh * var(--img-w) / var(--img-h)));
+  height: min(100dvh, calc(100vw * var(--img-h) / var(--img-w)));
 
   background: url("hero.jpg") center / 100% 100% no-repeat;
 }
