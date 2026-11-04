@@ -12,21 +12,20 @@
 </head>
 <body class="home">
 
-  <!-- The stage scales like "background-size: cover" so links stay pinned to the art -->
   <main class="stage" aria-label="Explorable room illustration">
 
-    <!-- Each link's position is set with --x / --y (percent of the image) -->
-    <a class="hotspot" href="about.html"    style="--x: 29.5%; --y: 54.5%;">About</a>
-    <a class="hotspot" href="projects.html" style="--x: 19%;   --y: 60%;">Projects</a>
-    <a class="hotspot" href="connect.html"  style="--x: 64.5%; --y: 62.5%;">Connect</a>
-    <a class="hotspot" href="burning.html"  style="--x: 49.5%; --y: 85.5%;">For Burning</a>
-    <a class="hotspot" href="puzzle.html"   style="--x: 7.5%;  --y: 96%;">Puzzle</a>
-    <a class="hotspot" href="stories.html"  style="--x: 31%;   --y: 97%;">Stories</a>
-    <a class="hotspot" href="misc.html"     style="--x: 60.5%; --y: 95.5%;">Misc</a>
+    <!-- px/py = position on the portrait image (phones)
+         lx/ly = position on the landscape image (desktops) -->
+    <a class="hotspot" href="about.html"    style="--px: 30%;   --py: 54%;   --lx: 41%;   --ly: 53%;">About</a>
+    <a class="hotspot" href="projects.html" style="--px: 19%;   --py: 42%;   --lx: 35.5%; --ly: 47%;">Projects</a>
+    <a class="hotspot" href="connect.html"  style="--px: 64.5%; --py: 62.5%; --lx: 57%;   --ly: 59%;">Connect</a>
+    <a class="hotspot" href="burning.html"  style="--px: 49.5%; --py: 85%;   --lx: 50%;   --ly: 86.5%;">For Burning</a>
+    <a class="hotspot" href="puzzle.html"   style="--px: 7%;    --py: 93%;   --lx: 29%;   --ly: 92%;">Puzzle</a>
+    <a class="hotspot" href="stories.html"  style="--px: 27%;   --py: 94%;   --lx: 38.5%; --ly: 90%;">Stories</a>
+    <a class="hotspot" href="misc.html"     style="--px: 60%;   --py: 95%;   --lx: 54%;   --ly: 92%;">Misc</a>
 
   </main>
 
-  <!-- Accessible fallback nav for keyboard / screen reader / cropped viewports -->
   <nav class="fallback-nav" aria-label="Site navigation">
     <a href="about.html">About</a>
     <a href="projects.html">Projects</a>
