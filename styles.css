@@ -2,22 +2,28 @@
    Variables
    ========================================================== */
 :root {
-  /* Image dimensions (width / height) – update if you swap the art */
+  /* DEFAULT = portrait screens (phones) */
+  --art: url("hero.jpg");
   --img-w: 848;
   --img-h: 1241;
-
-  /* Which part of the image stays centered when cropped (0% = top, 100% = bottom) */
-  --focus-y: 62%;
 
   --wood-dark: #1e1209;
   --wood-mid: #4a2c17;
   --paper: #f3e4c4;
-  --paper-dim: #d9c49a;
   --glow: #ffcf6b;
   --ink: #2b1a0e;
 
   --font-hand: "Caveat", "Segoe Script", cursive;
   --font-serif: "Lora", Georgia, "Times New Roman", serif;
+}
+
+/* Landscape screens (desktops, laptops, tablets turned sideways) */
+@media (orientation: landscape) {
+  :root {
+    --art: url("hero-wide.jpg");
+    --img-w: 1376;   /* width/height of hero-wide.jpg; only the ratio matters */
+    --img-h: 768;
+  }
 }
 
 /* ==========================================================
@@ -47,23 +53,23 @@ a { color: inherit; }
 body.home {
   width: 100vw;
   height: 100vh;
-  height: 100dvh;          /* mobile browser chrome-safe */
+  height: 100dvh;
   overflow: hidden;
   position: relative;
 }
 
-/* "cover" behaviour, but as a real box so children can be positioned on the art */
+/* Behaves like "background-size: cover", but as a real box so the
+   links can be positioned on top of the artwork */
 .stage {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 
-  /* "contain": the whole image always fits */
-  width:  min(100vw, calc(100dvh * var(--img-w) / var(--img-h)));
-  height: min(100dvh, calc(100vw * var(--img-h) / var(--img-w)));
+  width:  max(100vw, calc(100dvh * var(--img-w) / var(--img-h)));
+  height: max(100dvh, calc(100vw * var(--img-h) / var(--img-w)));
 
-  background: url("hero.jpg") center / 100% 100% no-repeat;
+  background: var(--art) center / 100% 100% no-repeat;
 }
 
 /* ----------------------------------------------------------
@@ -71,8 +77,8 @@ body.home {
    ---------------------------------------------------------- */
 .hotspot {
   position: absolute;
-  left: var(--x);
-  top: var(--y);
+  left: var(--px);
+  top: var(--py);
   transform: translate(-50%, -50%);
 
   font-family: var(--font-hand);
@@ -82,8 +88,7 @@ body.home {
   text-decoration: none;
   white-space: nowrap;
 
-  /* Subtle by default: part of the scenery */
-  color: rgba(255, 244, 214, 0.0);
+  color: rgba(255, 244, 214, 0);
   padding: 0.5em 0.9em;
   border-radius: 999px;
   cursor: pointer;
@@ -91,7 +96,14 @@ body.home {
               background 0.35s ease, transform 0.35s ease;
 }
 
-/* Soft hint that something is clickable, without spoiling the art */
+/* Use the landscape coordinates on landscape screens */
+@media (orientation: landscape) {
+  .hotspot {
+    left: var(--lx);
+    top: var(--ly);
+  }
+}
+
 .hotspot::after {
   content: "";
   position: absolute;
@@ -121,7 +133,7 @@ body.home {
   92%           { box-shadow: 0 0 18px 4px rgba(255, 207, 107, 0.35); }
 }
 
-/* Touch devices have no hover, so make the labels faintly visible */
+/* Touch devices have no hover, so show faint labels */
 @media (hover: none) {
   .hotspot {
     color: rgba(255, 244, 214, 0.85);
@@ -130,7 +142,7 @@ body.home {
   }
 }
 
-/* Fallback nav: visually hidden until focused via keyboard */
+/* Fallback nav: hidden until a keyboard user tabs to it */
 .fallback-nav {
   position: fixed;
   left: 50%;
@@ -155,7 +167,7 @@ body.home {
 .fallback-nav a:focus-visible { color: var(--glow); }
 
 /* ==========================================================
-   SUB-PAGES (template.html and friends)
+   SUB-PAGES
    ========================================================== */
 body.subpage {
   min-height: 100vh;
@@ -164,7 +176,6 @@ body.subpage {
   align-items: center;
   padding: clamp(1.5rem, 5vw, 4rem) 1.25rem 3rem;
 
-  /* Warm wood-and-lamplight backdrop that echoes the hero */
   background:
     radial-gradient(ellipse at 50% 0%, rgba(255, 207, 107, 0.18), transparent 60%),
     repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0 2px, transparent 2px 90px),
@@ -206,14 +217,12 @@ body.subpage {
   background: linear-gradient(90deg, transparent, var(--glow), transparent);
 }
 
-/* The "parchment" content box */
 .content-box {
   width: 100%;
   max-width: 46rem;
   padding: clamp(1.5rem, 4vw, 2.75rem);
   color: var(--ink);
-  background:
-    linear-gradient(rgba(243, 228, 196, 0.97), rgba(232, 212, 170, 0.97));
+  background: linear-gradient(rgba(243, 228, 196, 0.97), rgba(232, 212, 170, 0.97));
   border: 1px solid #b8975c;
   border-radius: 6px;
   box-shadow:
@@ -242,7 +251,6 @@ body.subpage {
   font-style: italic;
 }
 
-/* Back link */
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -256,8 +264,7 @@ body.subpage {
   background: rgba(30, 18, 9, 0.6);
   border: 1px solid var(--wood-mid);
   border-radius: 999px;
-  transition: color 0.25s, border-color 0.25s, transform 0.25s,
-              box-shadow 0.25s;
+  transition: color 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.25s;
 }
 .back-link:hover,
 .back-link:focus-visible {
