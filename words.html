@@ -85,7 +85,14 @@
     var next = document.getElementById('next');
     var empty = document.getElementById('empty');
 
+    function updateArrows() {
+      var many = photos.length > 1;
+      prev.hidden = !many;
+      next.hidden = !many;
+    }
+
     function show(i) {
+      if (!photos.length) return;
       index = (i + photos.length) % photos.length;
       slide.src = photos[index];
       slide.hidden = false;
@@ -93,11 +100,25 @@
       new Image().src = photos[(index + 1) % photos.length];
     }
 
+    /* If a picture is broken, drop it from the list and move on */
+    slide.addEventListener('error', function () {
+      if (!photos.length) return;
+      console.warn('Skipping broken picture:', photos[index]);
+      photos.splice(index, 1);
+      updateArrows();
+      if (!photos.length) {
+        slide.hidden = true;
+        empty.hidden = false;
+        return;
+      }
+      show(index);
+    });
+
     function begin(list) {
       photos = list;
       if (!photos.length) { empty.hidden = false; return; }
+      updateArrows();
       show(0);
-      if (photos.length > 1) { prev.hidden = false; next.hidden = false; }
     }
 
     /* Method 1: ask GitHub for every image in the folder (any file names) */
@@ -107,7 +128,7 @@
         return r.json();
       }).then(function (items) {
         var names = items
-          .filter(function (f) { return f.type === 'file' && /\.(jpe?g|png|webp|gif)$/i.test(f.name); })
+          .filter(function (f) { return f.type === 'file' && f.size > 0 && /\.(jpe?g|png|webp|gif)$/i.test(f.name); })
           .map(function (f) { return f.name; })
           .sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); });
         if (!names.length) throw new Error('empty');
