@@ -217,4 +217,150 @@ body.home::before {
   transition: opacity 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 .sound-toggle:hover,
-.sound-toggle:
+.sound-toggle:focus-visible {
+  opacity: 1;
+  border-color: var(--glow);
+  box-shadow: 0 0 12px rgba(255, 207, 107, 0.35);
+  outline: none;
+}
+
+/* ----------------------------------------------------------
+   Fallback nav: hidden until a keyboard user tabs to it
+   ---------------------------------------------------------- */
+.fallback-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 0.75rem;
+  transform: translate(-50%, 250%);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  max-width: 95vw;
+  padding: 0.6rem 1rem;
+  background: rgba(30, 18, 9, 0.92);
+  border: 1px solid var(--wood-mid);
+  border-radius: 10px;
+  font-family: var(--font-hand);
+  font-size: 1.2rem;
+  transition: transform 0.25s ease;
+  z-index: 30;
+}
+.fallback-nav:focus-within { transform: translate(-50%, 0); }
+.fallback-nav a { text-decoration: none; padding: 0.1rem 0.4rem; }
+.fallback-nav a:hover,
+.fallback-nav a:focus-visible { color: var(--glow); }
+
+/* ==========================================================
+   SUB-PAGES
+   ========================================================== */
+body.subpage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(1.5rem, 5vw, 4rem) 1.25rem 3rem;
+
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 207, 107, 0.18), transparent 60%),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0 2px, transparent 2px 90px),
+    linear-gradient(180deg, #3a2111 0%, var(--wood-dark) 100%);
+  background-attachment: fixed;
+}
+
+.page-header {
+  width: 100%;
+  max-width: 46rem;
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.page-header .kicker {
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  color: var(--glow);
+  margin: 0;
+  letter-spacing: 0.06em;
+}
+
+.page-title {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 8vw, 4.5rem);
+  line-height: 1.05;
+  margin: 0.1em 0 0;
+  color: var(--paper);
+  text-shadow: 0 0 18px rgba(255, 207, 107, 0.35);
+}
+
+.page-header::after {
+  content: "";
+  display: block;
+  width: 7rem;
+  height: 2px;
+  margin: 1.1rem auto 0;
+  background: linear-gradient(90deg, transparent, var(--glow), transparent);
+}
+
+.content-box {
+  width: 100%;
+  max-width: 46rem;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  color: var(--ink);
+  background: linear-gradient(rgba(243, 228, 196, 0.97), rgba(232, 212, 170, 0.97));
+  border: 1px solid #b8975c;
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 6px rgba(74, 44, 23, 0.9),
+    0 18px 40px rgba(0, 0, 0, 0.55),
+    inset 0 0 60px rgba(139, 94, 40, 0.25);
+  font-size: 1.08rem;
+}
+
+.content-box h2 {
+  font-family: var(--font-hand);
+  font-size: 2rem;
+  margin: 1.5rem 0 0.25rem;
+  color: #5a3414;
+}
+.content-box h2:first-child { margin-top: 0; }
+.content-box p { margin: 0 0 1em; }
+.content-box a { color: #7a3d10; text-underline-offset: 3px; }
+.content-box a:hover { color: #b0561a; }
+.content-box img { max-width: 100%; height: auto; border-radius: 4px; }
+
+.content-box blockquote {
+  margin: 1.25rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid #b8975c;
+  font-style: italic;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 0.55rem 1.2rem;
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  text-decoration: none;
+  color: var(--paper);
+  background: rgba(30, 18, 9, 0.6);
+  border: 1px solid var(--wood-mid);
+  border-radius: 999px;
+  transition: color 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+.back-link:hover,
+.back-link:focus-visible {
+  color: var(--glow);
+  border-color: var(--glow);
+  box-shadow: 0 0 14px rgba(255, 207, 107, 0.35);
+  transform: translateX(-3px);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  .touch-hint { display: none !important; }
+}
