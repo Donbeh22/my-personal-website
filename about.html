@@ -7,18 +7,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    .portrait {
+    .portrait-figure {
       float: left;
       width: 14rem;
       max-width: 40%;
       margin: 0.25rem 1.5rem 1rem 0;
+    }
+    .portrait-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
       border: 4px solid #5a3414;
       border-radius: 6px;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
+    .portrait-figure figcaption {
+      margin-top: 0.4rem;
+      font-size: 0.75rem;
+      line-height: 1.3;
+      text-align: center;
+      color: #5a3414;
+    }
     .content-box::after { content: ""; display: block; clear: both; }
     @media (max-width: 560px) {
-      .portrait { float: none; display: block; width: 70%; max-width: 16rem; margin: 0 auto 1.25rem; }
+      .portrait-figure { float: none; width: 70%; max-width: 16rem; margin: 0 auto 1.25rem; }
     }
   </style>
 </head>
@@ -30,15 +42,19 @@
   </header>
 
   <main class="content-box">
-    <img class="portrait" src="portrait.jpg" alt="Portrait of Helia Soren">
+    <figure class="portrait-figure">
+      <img src="portrait.jpg" alt="Portrait of Helia Soren">
+      <figcaption>Photo: <a href="https://www.instagram.com/m.ebrahimsafi/" target="_blank" rel="noopener">Ebrahim Safi</a></figcaption>
+    </figure>
 
-    <h2>Hi, welcome to Helia's room</h2>
+    <h2>Hi, I'm Helia</h2>
     <p>
-      The following letter may very well be the most conventional thing you see here; so you ought to know that when she is not fabricating adventurous tall tales, she is an avid Vespa Enthusiast, Mask Collector, Time Traveller and Timid Jaywalker. Plus, she can type up to 90 words per minute. 95 if she sits up straight. 
-
+      Write a sentence or two here about who you are and what you do.
+      Replace this text with your own words.
     </p>
     <p>
-      She's currently working on several storytelling inventions as well as some stories. Take a look around. You'll find a puzzle, and maybe a surprise here and there.
+      Add a second paragraph about what you're working on, what inspires you,
+      or what visitors will find in the rest of the room.
     </p>
     <p>
       Want to get in touch? Visit the <a href="connect.html">Connect</a> page.
