@@ -62,7 +62,7 @@
   </header>
 
   <main class="content-box">
-    <p></p>
+    <p>Write a sentence or two here introducing the gallery. Replace this text with your own.</p>
 
     <div class="viewer">
       <button id="prev" class="arrow" type="button" aria-label="Previous picture" hidden>&#8249;</button>
@@ -75,11 +75,11 @@
   <a class="back-link" href="index.html">&larr; Back to Home</a>
 
   <script>
-    /* Pictures are found automatically: gallery/1.jpg, gallery/2.jpg, gallery/3.jpg ... */
-    var EXTS = ['jpg', 'jpeg', 'png', 'webp'];
+    /* GitHub's list of what is inside your gallery folder */
+    var API = 'https://api.github.com/repos/Donbeh22/my-personal-website/contents/gallery';
+
     var photos = [];
     var index = 0;
-
     var slide = document.getElementById('slide');
     var prev = document.getElementById('prev');
     var next = document.getElementById('next');
@@ -89,29 +89,64 @@
       index = (i + photos.length) % photos.length;
       slide.src = photos[index];
       slide.hidden = false;
+      /* quietly load the next picture so flipping feels instant */
+      new Image().src = photos[(index + 1) % photos.length];
     }
 
-    function ready() {
-      if (photos.length === 0) { empty.hidden = false; return; }
+    function begin(list) {
+      photos = list;
+      if (!photos.length) { empty.hidden = false; return; }
+      show(0);
       if (photos.length > 1) { prev.hidden = false; next.hidden = false; }
     }
 
-    function probe(n) {
-      var e = 0;
-      (function tryNext() {
-        if (e >= EXTS.length) { ready(); return; }
-        var src = 'gallery/' + n + '.' + EXTS[e++];
-        var t = new Image();
-        t.onload = function () {
-          photos.push(src);
-          if (photos.length === 1) show(0);
-          probe(n + 1);
-        };
-        t.onerror = tryNext;
-        t.src = src;
-      })();
+    /* Method 1: ask GitHub for every image in the folder (any file names) */
+    function fromFolder() {
+      return fetch(API).then(function (r) {
+        if (!r.ok) throw new Error('no list');
+        return r.json();
+      }).then(function (items) {
+        var names = items
+          .filter(function (f) { return f.type === 'file' && /\.(jpe?g|png|webp|gif)$/i.test(f.name); })
+          .map(function (f) { return f.name; })
+          .sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); });
+        if (!names.length) throw new Error('empty');
+        return names.map(function (n) { return 'gallery/' + encodeURIComponent(n); });
+      });
     }
-    probe(1);
+
+    /* Method 2 (backup): look for 1.jpg, 2.jpg ... and skip small gaps */
+    function exists(src) {
+      return new Promise(function (resolve) {
+        var t = new Image();
+        t.onload = function () { resolve(true); };
+        t.onerror = function () { resolve(false); };
+        t.src = src;
+      });
+    }
+    function fromNumbers() {
+      var exts = ['jpg', 'jpeg', 'png', 'webp', 'JPG', 'JPEG', 'PNG'];
+      var found = [];
+      function check(n) {
+        return exts.reduce(function (p, ext) {
+          return p.then(function (hit) {
+            if (hit) return hit;
+            var src = 'gallery/' + n + '.' + ext;
+            return exists(src).then(function (ok) { return ok ? src : null; });
+          });
+        }, Promise.resolve(null));
+      }
+      function loop(n, misses) {
+        if (misses >= 5 || n > 200) return Promise.resolve(found);
+        return check(n).then(function (src) {
+          if (src) { found.push(src); return loop(n + 1, 0); }
+          return loop(n + 1, misses + 1);
+        });
+      }
+      return loop(1, 0);
+    }
+
+    fromFolder().catch(fromNumbers).then(begin);
 
     prev.addEventListener('click', function () { show(index - 1); });
     next.addEventListener('click', function () { show(index + 1); });
