@@ -8,51 +8,50 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     .page-header, .content-box { max-width: 64rem; }
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-      gap: 0.75rem;
-      margin-top: 1.25rem;
-    }
-    .thumb {
-      padding: 0;
-      border: 2px solid #b8975c;
-      border-radius: 4px;
-      background: none;
-      cursor: zoom-in;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .thumb:hover, .thumb:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-      outline: none;
-    }
-    .thumb img {
-      display: block;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      border-radius: 0;
-    }
-    .lightbox {
-      position: fixed;
-      inset: 0;
+    .viewer {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
-      background: rgba(10, 5, 2, 0.92);
-      cursor: zoom-out;
-      z-index: 50;
+      gap: 0.5rem;
+      margin-top: 1rem;
     }
-    .lightbox[hidden] { display: none; }
-    .lightbox img {
+    .frame {
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+    }
+    .frame img {
+      display: inline-block;
       max-width: 100%;
-      max-height: 100%;
-      border-radius: 4px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      max-height: 70vh;
+      width: auto;
+      height: auto;
+      border: 4px solid #5a3414;
+      border-radius: 6px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
+    .arrow {
+      flex: none;
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0 0 0.2rem;
+      font-size: 2rem;
+      line-height: 1;
+      color: var(--paper);
+      background: rgba(30, 18, 9, 0.75);
+      border: 1px solid #5a3414;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .arrow:hover, .arrow:focus-visible {
+      color: var(--glow);
+      border-color: var(--glow);
+      box-shadow: 0 0 12px rgba(255, 207, 107, 0.35);
+      outline: none;
+    }
+    .arrow[hidden] { display: none; }
+    .empty { text-align: center; font-style: italic; }
   </style>
 </head>
 <body class="subpage">
@@ -65,49 +64,73 @@
   <main class="content-box">
     <p>Write a sentence or two here introducing the gallery. Replace this text with your own.</p>
 
-    <div id="gallery" class="gallery"></div>
+    <div class="viewer">
+      <button id="prev" class="arrow" type="button" aria-label="Previous picture" hidden>&#8249;</button>
+      <div class="frame"><img id="slide" alt="Gallery picture" hidden></div>
+      <button id="next" class="arrow" type="button" aria-label="Next picture" hidden>&#8250;</button>
+    </div>
+    <p id="empty" class="empty" hidden>Pictures coming soon.</p>
   </main>
-
-  <div id="lightbox" class="lightbox" hidden>
-    <img id="lightbox-img" src="" alt="">
-  </div>
 
   <a class="back-link" href="index.html">&larr; Back to Home</a>
 
   <script>
-    /* Add or remove picture names here. One per line, in quotes, with a comma after each. */
-    var photos = [
-      "gallery/photo-01.jpg",
-      "gallery/photo-02.jpg",
-      "gallery/photo-03.jpg"
-    ];
+    /* Pictures are found automatically: gallery/1.jpg, gallery/2.jpg, gallery/3.jpg ... */
+    var EXTS = ['jpg', 'jpeg', 'png', 'webp'];
+    var photos = [];
+    var index = 0;
 
-    var grid = document.getElementById('gallery');
-    var box = document.getElementById('lightbox');
-    var big = document.getElementById('lightbox-img');
+    var slide = document.getElementById('slide');
+    var prev = document.getElementById('prev');
+    var next = document.getElementById('next');
+    var empty = document.getElementById('empty');
 
-    photos.forEach(function (src, i) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'thumb';
-      btn.setAttribute('aria-label', 'Open photo ' + (i + 1));
-      var img = document.createElement('img');
-      img.src = src;
-      img.alt = 'Gallery photo ' + (i + 1);
-      img.loading = 'lazy';
-      btn.appendChild(img);
-      btn.addEventListener('click', function () {
-        big.src = src;
-        big.alt = img.alt;
-        box.hidden = false;
-      });
-      grid.appendChild(btn);
-    });
+    function show(i) {
+      index = (i + photos.length) % photos.length;
+      slide.src = photos[index];
+      slide.hidden = false;
+    }
 
-    box.addEventListener('click', function () { box.hidden = true; });
+    function ready() {
+      if (photos.length === 0) { empty.hidden = false; return; }
+      if (photos.length > 1) { prev.hidden = false; next.hidden = false; }
+    }
+
+    function probe(n) {
+      var e = 0;
+      (function tryNext() {
+        if (e >= EXTS.length) { ready(); return; }
+        var src = 'gallery/' + n + '.' + EXTS[e++];
+        var t = new Image();
+        t.onload = function () {
+          photos.push(src);
+          if (photos.length === 1) show(0);
+          probe(n + 1);
+        };
+        t.onerror = tryNext;
+        t.src = src;
+      })();
+    }
+    probe(1);
+
+    prev.addEventListener('click', function () { show(index - 1); });
+    next.addEventListener('click', function () { show(index + 1); });
+
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') box.hidden = true;
+      if (photos.length < 2) return;
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
     });
+
+    /* Swipe on phones */
+    var startX = null;
+    slide.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    slide.addEventListener('touchend', function (e) {
+      if (startX === null || photos.length < 2) return;
+      var dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) show(dx < 0 ? index + 1 : index - 1);
+      startX = null;
+    }, { passive: true });
   </script>
 
 </body>
