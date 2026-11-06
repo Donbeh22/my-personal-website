@@ -3,40 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page Title – Helia Soren</title>
-  <meta name="description" content="Short description of this page.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Words Words Words Everywhere – Helia Soren</title>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .page-header, .content-box { max-width: 64rem; }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .thumb {
+      padding: 0;
+      border: 2px solid #b8975c;
+      border-radius: 4px;
+      background: none;
+      cursor: zoom-in;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .thumb:hover, .thumb:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+      outline: none;
+    }
+    .thumb img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 0;
+    }
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(10, 5, 2, 0.92);
+      cursor: zoom-out;
+      z-index: 50;
+    }
+    .lightbox[hidden] { display: none; }
+    .lightbox img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 4px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+  </style>
 </head>
 <body class="subpage">
 
   <header class="page-header">
-    <p class="kicker">a quiet corner of the room</p>
-    <h1 class="page-title">Page Title</h1>
+    <p class="kicker">a little of everything</p>
+    <h1 class="page-title">Words Words Words Everywhere</h1>
   </header>
 
   <main class="content-box">
-    <h2>A Heading</h2>
-    <p>
-      Replace this with your own text. Lorem ipsum dolor sit amet, consectetur
-      adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
-      magna aliqua.
-    </p>
+    <p>Write a sentence or two here introducing the gallery. Replace this text with your own.</p>
 
-    <blockquote>
-      A pull-quote or favorite line goes here.
-    </blockquote>
-
-    <h2>Another Section</h2>
-    <p>
-      Add as many sections as you like. Links look like
-      <a href="#">this</a>, and images scale to fit the box.
-    </p>
+    <div id="gallery" class="gallery"></div>
   </main>
 
+  <div id="lightbox" class="lightbox" hidden>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
   <a class="back-link" href="index.html">&larr; Back to Home</a>
+
+  <script>
+    /* Add or remove picture names here. One per line, in quotes, with a comma after each. */
+    var photos = [
+      "gallery/photo-01.jpg",
+      "gallery/photo-02.jpg",
+      "gallery/photo-03.jpg"
+    ];
+
+    var grid = document.getElementById('gallery');
+    var box = document.getElementById('lightbox');
+    var big = document.getElementById('lightbox-img');
+
+    photos.forEach(function (src, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'thumb';
+      btn.setAttribute('aria-label', 'Open photo ' + (i + 1));
+      var img = document.createElement('img');
+      img.src = src;
+      img.alt = 'Gallery photo ' + (i + 1);
+      img.loading = 'lazy';
+      btn.appendChild(img);
+      btn.addEventListener('click', function () {
+        big.src = src;
+        big.alt = img.alt;
+        box.hidden = false;
+      });
+      grid.appendChild(btn);
+    });
+
+    box.addEventListener('click', function () { box.hidden = true; });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') box.hidden = true;
+    });
+  </script>
 
 </body>
 </html>
