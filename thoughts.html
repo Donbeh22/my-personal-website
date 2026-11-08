@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Possible Thought Cloud – Helia Soren</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .post-date { margin: 0 0 1.25rem; font-size: 0.9rem; letter-spacing: 0.05em; color: #7a5a35; }
+  </style>
+</head>
+<body class="subpage">
+
+  <header class="page-header">
+    <p class="kicker">possible thought cloud</p>
+    <h1 id="title" class="page-title">Loading…</h1>
+  </header>
+
+  <main class="content-box">
+    <p id="date" class="post-date"></p>
+    <div id="body"></div>
+  </main>
+
+  <a class="back-link" href="cloud.html">&larr; Back to all thoughts</a>
+
+  <script>
+    var params = new URLSearchParams(location.search);
+    var file = params.get('p') || '';
+    var titleEl = document.getElementById('title');
+    var dateEl = document.getElementById('date');
+    var bodyEl = document.getElementById('body');
+
+    function esc(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* **bold**, *italic*, and [link text](https://address) */
+    function inline(s) {
+      s = esc(s);
+      s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (m, text, url) {
+        if (/^(https?:\/\/|mailto:)/i.test(url) || /^[\w\-.\/#?=&;%]+$/.test(url)) {
+          var ext = /^https?:/i.test(url) ? ' target="_blank" rel="noopener"' : '';
+          return '<a href="' + url + '"' + ext + '>' + text + '</a>';
+        }
+        return m;
+      });
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      return s;
+    }
+
+    function prettyDate(name) {
+      var m = name.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (!m) return '';
+      var d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+    }
+
+    function fail() {
+      titleEl.textContent = 'Hmm, I can’t find that one';
+      bodyEl.innerHTML = '<p>That thought may have moved. Head back to the list to find it.</p>';
+    }
+
+    function render(text) {
+      var lines = text.replace(/\r/g, '').split('\n');
+      var title = (lines.shift() || '').replace(/^#+\s*/, '').trim();
+      var blocks = lines.join('\n').split(/\n\s*\n/);
+
+      titleEl.textContent = title || 'Untitled';
+      document.title = (title || 'Thought') + ' – Possible Thought Cloud';
+      dateEl.textContent = prettyDate(file);
+      if (!dateEl.textContent) dateEl.hidden = true;
+
+      var html = '';
+      blocks.forEach(function (b) {
+        b = b.trim();
+        if (!b) return;
+        var img = b.match(/^!\[(.*)\]\(([^)\s]+)\)$/);
+        if (img && /^(https?:\/\/|[\w\-.\/%]+$)/i.test(img[2])) {
+          html += '<p><img src="' + esc(img[2]) + '" alt="' + esc(img[1]) + '"></p>';
+        } else if (/^##\s+/.test(b)) {
+          html += '<h2>' + inline(b.replace(/^##\s+/, '')) + '</h2>';
+        } else if (/^>\s?/.test(b)) {
+          html += '<blockquote>' + inline(b.replace(/^>\s?/gm, '').replace(/\n/g, ' ')) + '</blockquote>';
+        } else {
+          html += '<p>' + inline(b).replace(/\n/g, '<br>') + '</p>';
+        }
+      });
+      bodyEl.innerHTML = html;
+    }
+
+    if (!/^[A-Za-z0-9._ \-]+\.txt$/.test(file)) {
+      fail();
+    } else {
+      fetch('thoughts/' + encodeURIComponent(file))
+        .then(function (r) { if (!r.ok) throw new Error('missing'); return r.text(); })
+        .then(render)
+        .catch(fail);
+    }
+  </script>
+
+</body>
+</html>
