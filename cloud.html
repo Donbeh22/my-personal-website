@@ -24,6 +24,7 @@
       color: #5a3414;
     }
     .post-list a:hover { color: #b0561a; text-decoration: underline; }
+    .status { font-style: italic; }
   </style>
 </head>
 <body class="subpage">
@@ -36,22 +37,68 @@
   <main class="content-box">
     <p>Write a sentence or two here introducing your blog. Replace this text with your own.</p>
 
-    <!-- Newest post first. Add each new post at the TOP of this list. -->
-    <ul class="post-list">
-      <li>
-            <li>
-        <time datetime="2026-11-15">November 15, 2026</time>
-        <a href="Antiblog-Launches.html">Antiblog Launches...Again</a>
-      </li>
-      </li>
-      <li>
-        <time datetime="2026-11-01">November 1, 2026</time>
-        <a href="thought-first-post.html">Title of your first post</a>
-      </li>
-    </ul>
+    <p id="status" class="status">Loading thoughts…</p>
+    <ul id="posts" class="post-list"></ul>
   </main>
 
   <a class="back-link" href="index.html">&larr; Back to Home</a>
+
+  <script>
+    var API = 'https://api.github.com/repos/Donbeh22/my-personal-website/contents/thoughts';
+    var list = document.getElementById('posts');
+    var statusEl = document.getElementById('status');
+
+    function prettyDate(name) {
+      var m = name.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (!m) return '';
+      var d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+    }
+
+    function fallbackTitle(name) {
+      return name.replace(/^\d{4}-\d{2}-\d{2}-?/, '').replace(/\.txt$/i, '').replace(/-/g, ' ') || name;
+    }
+
+    fetch(API).then(function (r) {
+      if (!r.ok) throw new Error('no list');
+      return r.json();
+    }).then(function (items) {
+      var files = items
+        .filter(function (f) { return f.type === 'file' && /\.txt$/i.test(f.name); })
+        .map(function (f) { return f.name; })
+        .sort().reverse();                       /* newest date first */
+
+      if (!files.length) {
+        statusEl.textContent = 'No thoughts yet. Check back soon.';
+        return;
+      }
+
+      return Promise.all(files.map(function (name) {
+        return fetch('thoughts/' + encodeURIComponent(name))
+          .then(function (r) { return r.ok ? r.text() : ''; })
+          .catch(function () { return ''; })
+          .then(function (text) {
+            var first = (text.split(/\r?\n/)[0] || '').replace(/^#+\s*/, '').trim();
+            return { name: name, title: first || fallbackTitle(name) };
+          });
+      })).then(function (posts) {
+        statusEl.hidden = true;
+        posts.forEach(function (p) {
+          var li = document.createElement('li');
+          var t = document.createElement('time');
+          t.textContent = prettyDate(p.name);
+          var a = document.createElement('a');
+          a.href = 'thought.html?p=' + encodeURIComponent(p.name);
+          a.textContent = p.title;
+          li.appendChild(t);
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+      });
+    }).catch(function () {
+      statusEl.textContent = "Couldn't load the thoughts right now. Please try again in a little while.";
+    });
+  </script>
 
 </body>
 </html>
