@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -90,7 +90,8 @@
       bodyEl.innerHTML = html;
     }
 
-    if (!/^[A-Za-z0-9._ \-]+\.txt$/.test(file)) {
+    /* Only .txt files, and nothing that tries to leave the thoughts folder */
+    if (!/\.txt$/i.test(file) || /[\/\\]/.test(file) || file.indexOf('..') !== -1) {
       fail();
     } else {
       fetch('thoughts/' + encodeURIComponent(file))
