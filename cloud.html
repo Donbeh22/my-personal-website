@@ -3,37 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page Title – Helia Soren</title>
-  <meta name="description" content="Short description of this page.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Possible Thought Cloud – Helia Soren</title>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .post-list { list-style: none; margin: 1rem 0 0; padding: 0; }
+    .post-list li { padding: 0.9rem 0; border-bottom: 1px solid rgba(139, 94, 40, 0.35); }
+    .post-list li:last-child { border-bottom: 0; }
+    .post-list time {
+      display: block;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      color: #7a5a35;
+    }
+    .post-list a {
+      font-family: var(--font-hand);
+      font-size: 1.7rem;
+      line-height: 1.2;
+      text-decoration: none;
+      color: #5a3414;
+    }
+    .post-list a:hover { color: #b0561a; text-decoration: underline; }
+  </style>
 </head>
 <body class="subpage">
 
   <header class="page-header">
-    <p class="kicker">a quiet corner of the room</p>
-    <h1 class="page-title">Page Title</h1>
+    <p class="kicker">notes from the clouds</p>
+    <h1 class="page-title">Possible Thought Cloud</h1>
   </header>
 
   <main class="content-box">
-    <h2>A Heading</h2>
-    <p>
-      Replace this with your own text. Lorem ipsum dolor sit amet, consectetur
-      adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore
-      magna aliqua.
-    </p>
+    <p>Write a sentence or two here introducing your blog. Replace this text with your own.</p>
 
-    <blockquote>
-      A pull-quote or favorite line goes here.
-    </blockquote>
-
-    <h2>Another Section</h2>
-    <p>
-      Add as many sections as you like. Links look like
-      <a href="#">this</a>, and images scale to fit the box.
-    </p>
+    <!-- Newest post first. Add each new post at the TOP of this list. -->
+    <ul class="post-list">
+      <li>
+        <time datetime="2026-11-08">November 8, 2026</time>
+        <a href="thought-second-post.html">Title of your second post</a>
+      </li>
+      <li>
+        <time datetime="2026-11-01">November 1, 2026</time>
+        <a href="thought-first-post.html">Title of your first post</a>
+      </li>
+    </ul>
   </main>
 
   <a class="back-link" href="index.html">&larr; Back to Home</a>
