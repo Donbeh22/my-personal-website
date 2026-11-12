@@ -21,6 +21,17 @@
       50%      { box-shadow: 0 0 14px 4px rgba(255, 207, 107, 0.5); }
     }
 
+    /* Lets a finger slide across the room without the page scrolling or zooming */
+    .stage { touch-action: none; }
+
+    /* A tab lit by a finger passing over it (same look as desktop hover) */
+    .hotspot.lit {
+      color: var(--paper);
+      background: rgba(30, 18, 9, 0.55);
+      text-shadow: 0 0 10px var(--glow), 0 0 22px rgba(255, 207, 107, 0.6);
+      transform: translate(-50%, -50%) scale(1.12);
+    }
+
     /* Temporary on-screen debug message (see DEBUG in the script) */
     .audio-debug {
       position: fixed;
@@ -61,7 +72,7 @@
   </main>
 
   <!-- Shown briefly on touch screens only -->
-  <p class="touch-hint" aria-hidden="true">Tap around the room to explore</p>
+  <p class="touch-hint" aria-hidden="true">Slide your finger around the room to explore</p>
 
   <!-- Sound on/off -->
   <button id="sound-toggle" class="sound-toggle" type="button" aria-label="Toggle sound">🔇</button>
@@ -83,6 +94,56 @@
     <a href="flying-car.html">Flying Car</a>
   </nav>
 
+  <!-- Light up tabs when a finger slides over them (touch screens) -->
+  <script>
+    (function () {
+      var spots = Array.prototype.slice.call(document.querySelectorAll('.hotspot'));
+      var REACH = 28;     /* pixels: how close a finger must pass to wake a tab */
+      var HOLD = 2200;    /* milliseconds a tab stays lit after the finger lifts */
+      var current = null;
+      var timer = null;
+
+      function setLit(el) {
+        if (el === current) return;
+        if (current) current.classList.remove('lit');
+        current = el;
+        if (el) el.classList.add('lit');
+      }
+
+      function nearest(x, y) {
+        var best = null;
+        var bestDist = REACH + 1;
+        spots.forEach(function (el) {
+          var r = el.getBoundingClientRect();
+          var dx = Math.max(r.left - x, 0, x - r.right);
+          var dy = Math.max(r.top - y, 0, y - r.bottom);
+          var d = Math.sqrt(dx * dx + dy * dy);
+          if (d < bestDist) { bestDist = d; best = el; }
+        });
+        return best;
+      }
+
+      function onTouch(e) {
+        if (e.pointerType === 'mouse') return;   /* desktop hover is handled by CSS */
+        if (e.target.closest && e.target.closest('#sound-toggle')) return;
+        clearTimeout(timer);
+        setLit(nearest(e.clientX, e.clientY));
+      }
+
+      function onEnd(e) {
+        if (e.pointerType === 'mouse') return;
+        clearTimeout(timer);
+        timer = setTimeout(function () { setLit(null); }, HOLD);
+      }
+
+      document.addEventListener('pointerdown', onTouch);
+      document.addEventListener('pointermove', onTouch);
+      document.addEventListener('pointerup', onEnd);
+      document.addEventListener('pointercancel', onEnd);
+    })();
+  </script>
+
+  <!-- Background music -->
   <script>
     (function () {
       var DEBUG = false;            /* leave false so no test message shows */
