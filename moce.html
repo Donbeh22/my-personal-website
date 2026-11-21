@@ -7,270 +7,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    .intro {
-      max-width: 38rem;
-      margin: 1rem auto 0;
-      font-size: 1.05rem;
-      line-height: 1.6;
-      color: var(--paper);
-      opacity: 0.92;
-    }
-    .intro em { display: block; margin-top: 0.4rem; color: var(--glow); }
+    /* Center the image in the middle of the screen */
+    body.subpage { justify-content: center; }
 
-    .question {
-      margin: 0 0 1.25rem;
-      font-family: var(--font-hand);
-      font-size: 2rem;
-      line-height: 1.2;
-      color: #5a3414;
-    }
+    .content-box { width: auto; max-width: 100%; text-align: center; }
 
-    .options { display: grid; gap: 0.6rem; }
-    .option {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.8rem;
-      width: 100%;
-      padding: 0.75rem 0.9rem;
-      text-align: left;
-      font: inherit;
-      font-size: 1rem;
-      line-height: 1.4;
-      color: var(--ink);
-      background: rgba(255, 255, 255, 0.35);
-      border: 1px solid #b8975c;
+    .moce-figure { margin: 0; }
+    .moce-figure img {
+      display: inline-block;
+      max-width: 100%;
+      max-height: 75vh;
+      width: auto;
+      height: auto;
+      border: 4px solid #5a3414;
       border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
-    .option:hover, .option:focus-visible {
-      background: rgba(255, 255, 255, 0.6);
-      border-color: #7a3d10;
-      outline: none;
-    }
-    .option .letter {
-      flex: none;
-      width: 1.9rem;
-      height: 1.9rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-hand);
-      font-size: 1.3rem;
-      line-height: 1;
-      color: var(--paper);
-      background: #5a3414;
-      border-radius: 50%;
-    }
-    .option small { display: block; margin-top: 0.15rem; font-size: 0.85rem; opacity: 0.75; }
-    .option.selected {
-      background: rgba(90, 52, 20, 0.14);
-      border-color: #5a3414;
-      box-shadow: inset 0 0 0 1px #5a3414;
-    }
-    .options.locked .option:not(.selected) { opacity: 0.55; }
-
-    .card {
-      margin-top: 1.5rem;
-      padding: 1rem 1.2rem;
-      background: rgba(255, 255, 255, 0.4);
-      border-left: 4px solid #b8975c;
-      border-radius: 4px;
-    }
-    .card[hidden] { display: none; }
-    .card h2 { margin: 0 0 0.4rem; font-size: 1.7rem; }
-    .card p:last-child { margin-bottom: 0; }
-
-    .followup label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-family: var(--font-hand);
-      font-size: 1.6rem;
-      color: #5a3414;
-    }
-    .followup textarea {
-      width: 100%;
-      min-height: 6rem;
-      padding: 0.7rem;
-      font: inherit;
-      font-size: 1rem;
-      color: var(--ink);
-      background: rgba(255, 255, 255, 0.6);
-      border: 1px solid #b8975c;
-      border-radius: 6px;
-      resize: vertical;
-    }
-    .note { margin: 0.4rem 0 0.9rem; font-size: 0.85rem; font-style: italic; opacity: 0.8; }
-
-    .btn {
-      padding: 0.5rem 1.2rem;
-      font-family: var(--font-hand);
-      font-size: 1.35rem;
-      color: var(--paper);
-      background: #5a3414;
-      border: 0;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
-    }
-    .btn:hover, .btn:focus-visible { background: #7a3d10; outline: none; transform: translateY(-1px); }
-    .btn.ghost { color: #5a3414; background: transparent; border: 1px solid #5a3414; }
-    .btn.ghost:hover, .btn.ghost:focus-visible { color: var(--paper); background: #5a3414; }
-
-    .lenses { margin: 0.6rem 0 0; padding-left: 1.2rem; }
-    .lenses li { margin-bottom: 0.8rem; }
-    .lenses strong { color: #5a3414; }
-
-    .restart { margin-top: 1.5rem; text-align: center; }
-    .restart[hidden] { display: none; }
   </style>
 </head>
 <body class="subpage">
 
-  <header class="page-header">
-    <p class="kicker">a small experiment</p>
-    <h1 class="page-title">Moce Seone</h1>
-    <p class="intro">
-      Get a high-signal snapshot of what you value, what stresses you out about modern life, and how you orient yourself toward risk and novelty. For your own purposes. No information gathered or stored.
-    </p>
-  </header>
-
   <main class="content-box">
-
-    <h2 class="question" id="q">If you could time travel to any time period — what would you choose?</h2>
-    <div class="options" id="options" role="group" aria-labelledby="q"></div>
-
-    <section class="card" id="result" aria-live="polite" hidden>
-      <h2 id="result-title"></h2>
-      <p id="result-text"></p>
-    </section>
-
-    <section class="card followup" id="followup" hidden>
-      <label for="answer">What’s the very first thing you’d do once you arrived?</label>
-      <textarea id="answer" placeholder="Type whatever comes to mind…"></textarea>
-      <p class="note">This stays on your screen. Nothing is sent or saved.</p>
-      <button class="btn" id="reveal" type="button">What does that say?</button>
-    </section>
-
-    <section class="card" id="lenses" aria-live="polite" hidden>
-      <h2>Take a look at your own answer</h2>
-      <p>Here’s what to notice in how you explained your choice:</p>
-      <ul class="lenses">
-        <li><strong>Agency vs. observation.</strong> Did you talk about taking part in history, like inventing something or joining a movement? Or about watching it safely, as a tourist? That hints at how much risk you’re comfortable with, and how much control you feel you have.</li>
-        <li><strong>Individual vs. collective.</strong> Did you focus on personal sensory experiences, like food, music, or fashion? Or on witnessing major turning points in society?</li>
-        <li><strong>Escapism vs. curiosity.</strong> Are you running away from something about today, like social media, political tension, or a corporate routine? Or running toward something you find fascinating?</li>
-      </ul>
-    </section>
-
-    <div class="restart" id="restart" hidden>
-      <button class="btn ghost" id="again" type="button">Start over</button>
-    </div>
-
+    <figure class="moce-figure">
+      <img src="moce-seone.jpg" alt="never mind">
+    </figure>
   </main>
 
   <a class="back-link" href="index.html">&larr; Back to Home</a>
-
-  <script>
-    var CHOICES = [
-      {
-        letter: 'A',
-        label: 'The Distant Past',
-        eg: 'e.g., Ancient Rome, Renaissance, Victorian Era',
-        text: 'Often points to a romanticization of aesthetics, craftsmanship, grand narratives, or simpler social structures. It can also signal nostalgia for a perceived golden age—a desire for clear rules, epic adventure, or escaping the digital noise of modern life. (Though it sometimes overlooks the harsh realities of historical medicine and sanitation, suggesting an idealistic streak.)'
-      },
-      {
-        letter: 'B',
-        label: 'The Recent Past',
-        eg: 'e.g., the 1950s, 1980s, or 1990s',
-        text: 'Usually reflects a desire for comfort, familiarity, or cultural resonance. Picking the decades right before you were born often shows an appreciation for specific music, fashion, or an era that felt culturally optimistic and pre-internet. Picking an era from your own youth signals a desire to recapture innocence or re-experience a peak memory.'
-      },
-      {
-        letter: 'C',
-        label: 'The Near Future',
-        eg: 'e.g., 50 to 100 years ahead',
-        text: 'Signals pragmatism, curiosity, and optimism (or at least a strong investment in problem-solving). You want to see how current trends—technology, medicine, climate, space travel—actually play out. You’re forward-looking and comfortable with change.'
-      },
-      {
-        letter: 'D',
-        label: 'The Distant Future',
-        eg: 'e.g., 500+ years ahead',
-        text: 'Points toward high openness to experience, abstract thinking, and a tolerance for the unknown. Choosing a completely unrecognizable world suggests you aren’t overly attached to current cultural norms and are driven by pure intellectual or existential curiosity.'
-      },
-      {
-        letter: 'E',
-        label: 'Refusing to Travel / Staying Put',
-        eg: '',
-        text: 'Often signals high practicality, groundedness, or a keen awareness of privilege. You tend to weigh the downsides (lack of modern medicine, civil rights, or hygiene) heavily against the novelty. It can also indicate high contentment with your current life and relationships.'
-      }
-    ];
-
-    var optionsEl = document.getElementById('options');
-    var resultEl = document.getElementById('result');
-    var resultTitle = document.getElementById('result-title');
-    var resultText = document.getElementById('result-text');
-    var followEl = document.getElementById('followup');
-    var answerEl = document.getElementById('answer');
-    var lensesEl = document.getElementById('lenses');
-    var restartEl = document.getElementById('restart');
-    var buttons = [];
-
-    CHOICES.forEach(function (c) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'option';
-
-      var badge = document.createElement('span');
-      badge.className = 'letter';
-      badge.textContent = c.letter;
-
-      var body = document.createElement('span');
-      var name = document.createElement('strong');
-      name.textContent = c.label;
-      body.appendChild(name);
-      if (c.eg) {
-        var small = document.createElement('small');
-        small.textContent = '(' + c.eg + ')';
-        body.appendChild(small);
-      }
-
-      b.appendChild(badge);
-      b.appendChild(body);
-      b.addEventListener('click', function () { choose(c, b); });
-      optionsEl.appendChild(b);
-      buttons.push(b);
-    });
-
-    function choose(c, btn) {
-      buttons.forEach(function (x) { x.classList.remove('selected'); });
-      btn.classList.add('selected');
-      optionsEl.classList.add('locked');
-
-      resultTitle.textContent = c.letter + '. ' + c.label;
-      resultText.textContent = c.text;
-      resultEl.hidden = false;
-      followEl.hidden = false;
-      restartEl.hidden = false;
-      lensesEl.hidden = true;
-
-      resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    document.getElementById('reveal').addEventListener('click', function () {
-      lensesEl.hidden = false;
-      lensesEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
-
-    document.getElementById('again').addEventListener('click', function () {
-      buttons.forEach(function (x) { x.classList.remove('selected'); });
-      optionsEl.classList.remove('locked');
-      resultEl.hidden = true;
-      followEl.hidden = true;
-      lensesEl.hidden = true;
-      restartEl.hidden = true;
-      answerEl.value = '';
-      document.getElementById('q').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  </script>
 
 </body>
 </html>
